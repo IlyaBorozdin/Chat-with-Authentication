@@ -8,6 +8,9 @@ certificates/
 log/
 *.log
 
+# Ignore any images
+img/
+
 # Ignore local environment
 .env
 

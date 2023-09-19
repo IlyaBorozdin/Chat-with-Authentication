@@ -11,27 +11,31 @@ const appRoot = require('app-root-path');
 
 const shutdown = require('./back/src/shutdown');
 const loggerHandler = require('./back/src/middlewares/logger/handler');
-//const homepageRouter = require('./src/routers/homepage/homepage');
 const apiRouter = require('./back/src/routers/api/api');
 const NotFoundError = require('./back/src/services/errors/notFound');
 const errorHandlerConv = require('./back/src/middlewares/error/handlerConv');
 const errorHandlerJSON = require('./back/src/middlewares/error/handlerJSON');
-//const profileRouter = require('./src/routers/profile/profile');
-//const spaRouter = require('./src/routers/spa/spa');
+const imageRouter = require('./back/src/routers/image/image');
+const authorization = require('./back/src/middlewares/authorization');
+const wsRouter = require('./back/src/routers/ws/ws');
+const authentication = require('./back/src/middlewares/authentication');
 
 const app = express();
-
-//app.set('view engine', 'ejs');
-//app.set('views', path.join(__dirname, 'public'));
 
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
+
 app.use(loggerHandler);
-//app.use('/', spaRouter);
-//app.use('/access', homepageRouter);
+
 app.use('/api', apiRouter);
-//app.use('/profile', profileRouter);
+app.use(authentication);
+app.use('/', imageRouter);
+wsRouter(app);
+
+app.use(authorization);
+
+
 app.use((req, res, next) => {
     return next(new NotFoundError('Not Found', req.url));
 });

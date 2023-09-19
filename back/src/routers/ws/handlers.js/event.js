@@ -13,11 +13,11 @@ class Event {
     }
 
     broadcast(clientMessage, roomId) {
-        this.io.to(roomId).emit('message', clientMessage);
+        this.io.to(roomId).emit(JSON.parse(clientMessage).event, clientMessage);
     }
 
     broadcastAvoid(clientMessage, roomId) {
-        this.socket.to(roomId).broadcast.emit('message', clientMessage);
+        this.socket.to(roomId).broadcast.emit(JSON.parse(clientMessage).event, clientMessage);
     }
 }
 
