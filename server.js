@@ -16,9 +16,10 @@ const NotFoundError = require('./back/src/services/errors/notFound');
 const errorHandlerConv = require('./back/src/middlewares/error/handlerConv');
 const errorHandlerJSON = require('./back/src/middlewares/error/handlerJSON');
 const imageRouter = require('./back/src/routers/image/image');
-const authorization = require('./back/src/middlewares/authorization');
 const wsRouter = require('./back/src/routers/ws/ws');
 const authentication = require('./back/src/middlewares/authentication');
+const spaRouter = require('./back/src/routers/spa/spa');
+const accessRouter = require('./back/src/routers/access/access');
 
 const app = express();
 
@@ -28,13 +29,14 @@ app.use(cookieParser());
 
 app.use(loggerHandler);
 
+app.use('/', spaRouter);
+app.use('/access', accessRouter);
 app.use('/api', apiRouter);
-app.use(authentication);
 app.use('/', imageRouter);
-wsRouter(app);
-
-app.use(authorization);
-
+app.get('/connection', authentication, (req, res, next) => {
+    wsRouter(app);
+    res.status(200).json({ connection: true });
+});
 
 app.use((req, res, next) => {
     return next(new NotFoundError('Not Found', req.url));
